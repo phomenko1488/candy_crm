@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,6 +30,7 @@ public class UserController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) Long roleId, // ID роли для фильтра
+            Authentication authentication,
             @AuthenticationPrincipal User currentUser,
             Model model) {
         Integer currentLevel = currentUser.getRole().getLevel();
@@ -37,12 +39,13 @@ public class UserController {
 
         Page<User> usersPage;
         if (roleId != null) {
-            Role role = new Role(); role.setId(roleId); // Загрузи если нужно
+            Role role = new Role();
+            role.setId(roleId); // Загрузи если нужно
             usersPage = userService.getPageByRole(role, pageable, currentLevel);
         } else {
             usersPage = userService.getPage(pageable, currentLevel);
         }
-
+        model.addAttribute("user", (User) authentication.getPrincipal());
         model.addAttribute("usersPage", usersPage);
         model.addAttribute("currentRoleId", roleId);
         model.addAttribute("availableRoles", userService.getAvailableRolesForCreation(currentLevel)); // Только для создания
@@ -73,10 +76,12 @@ public class UserController {
     @GetMapping("/{id}")
     public String item(@PathVariable Long id,
                        @AuthenticationPrincipal User currentUser,
+                       Authentication authentication,
                        Model model) {
         Optional<User> user = userService.getById(id, currentUser.getRole().getLevel());
         if (user.isPresent()) {
-            model.addAttribute("user", user.get());
+            model.addAttribute("userM", user.get());
+            model.addAttribute("user", (User) authentication.getPrincipal());
             return "users/item";
         } else {
             return "redirect:/users";

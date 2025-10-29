@@ -37,12 +37,14 @@ public class DecorationController {
     }
 
     @GetMapping
-    public String listDecorations(Model model, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
+    public String listDecorations(Model model, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size,
+                                  Authentication authentication) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Decoration> decorationPage = decorationService.getAllDecorations(pageable);
 
         model.addAttribute("decorations", decorationPage.getContent());
         model.addAttribute("page", decorationPage);
+        model.addAttribute("user", (User) authentication.getPrincipal());
         model.addAttribute("newDecoration", new Decoration());
         model.addAttribute("newDecorationOperation", new DecorationOperationCreateRequest());
         return "decorations/list";
@@ -53,7 +55,8 @@ public class DecorationController {
                                  @RequestParam(defaultValue = "0") int opPage,
                                  @RequestParam(defaultValue = "20") int opSize,
                                  @RequestParam(defaultValue = "0") int tePage,
-                                 @RequestParam(defaultValue = "20") int teSize) {
+                                 @RequestParam(defaultValue = "20") int teSize,
+                                 Authentication authentication) {
         Decoration decoration = decorationService.getById(id);
 
         Pageable operationsPageable = PageRequest.of(opPage, opSize);
@@ -61,7 +64,7 @@ public class DecorationController {
 
         Pageable templatesPageable = PageRequest.of(tePage, teSize);
         Page<DecorationTemplate> templates = decorationTemplateService.getTemplatesByDecoration(id, templatesPageable);
-
+        model.addAttribute("user", (User) authentication.getPrincipal());
         model.addAttribute("decoration", decoration);
         model.addAttribute("operations", operations);
         model.addAttribute("templates", templates);

@@ -29,13 +29,14 @@ public class OrderController {
     @GetMapping
     public String getOrders(Model model,
                             @RequestParam(defaultValue = "0") int page,
-                            @RequestParam(defaultValue = "20") int size) {
+                            @RequestParam(defaultValue = "20") int size,
+                            Authentication authentication) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Order> orders = orderService.getAllOrders(pageable);
         model.addAttribute("products", productRepository.findAll());
         model.addAttribute("decorations", decorationRepository.findAll());
         model.addAttribute("orders", orders);
-//        model.addAttribute("page", decorationPage);
+        model.addAttribute("user", (User) authentication.getPrincipal());
         model.addAttribute("newOrderCreateRequest", new OrderCreateRequest());
         return "/orders/list";
     }
@@ -56,9 +57,11 @@ public class OrderController {
 
     @GetMapping("/{id}")
     public String getOrder(@PathVariable("id") Long id,
+                           Authentication authentication,
                            Model model) {
         Order order = orderService.getOrderById(id);
         model.addAttribute("order", order);
+        model.addAttribute("user", (User) authentication.getPrincipal());
         model.addAttribute("newOrderEditRequest", new OrderEditRequest());
         return "/orders/item";
     }

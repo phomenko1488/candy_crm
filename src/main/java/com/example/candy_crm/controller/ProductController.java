@@ -32,11 +32,12 @@ public class ProductController {
     public String listProducts(
             Model model,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(defaultValue = "20") int size,
+            Authentication authentication
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Product> productPage = productService.getAllProducts(pageable);
-
+        model.addAttribute("user", (User) authentication.getPrincipal());
         model.addAttribute("products", productPage.getContent());
         model.addAttribute("page", productPage);
         model.addAttribute("newProduct", new Product());
@@ -50,12 +51,14 @@ public class ProductController {
             Model model,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
-            @RequestParam(required = false) Boolean successfullyCreated
+            @RequestParam(required = false) Boolean successfullyCreated,
+            Authentication authentication
     ) {
         Product product = productService.getById(id);
         Pageable pageable = PageRequest.of(page, size);
         Page<Operation> operations = productService.getOperationsForProduct(id, pageable);
 
+        model.addAttribute("user",(User) authentication.getPrincipal());
         model.addAttribute("product", product);
         model.addAttribute("operations", operations);
         if (successfullyCreated != null)

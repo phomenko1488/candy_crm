@@ -55,7 +55,7 @@ public class User implements UserDetails {
     }
 
     public boolean hasRole(String roleName) {
-        return role.getName().equalsIgnoreCase(roleName);
+        return role.getName().contains(roleName);
     }
 
     // Методы для иерархии

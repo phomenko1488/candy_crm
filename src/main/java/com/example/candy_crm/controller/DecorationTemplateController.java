@@ -2,6 +2,7 @@ package com.example.candy_crm.controller;
 
 import com.example.candy_crm.dto.decorationTemplate.DecorationTemplateCreateRequest;
 import com.example.candy_crm.model.decoration.DecorationTemplate;
+import com.example.candy_crm.model.user.User;
 import com.example.candy_crm.service.decoration.DecorationTemplateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -26,9 +27,10 @@ public class DecorationTemplateController {
     }
 
     @GetMapping("/{id}")
-    public String viewTemplate(@PathVariable Long id, Model model) {
+    public String viewTemplate(@PathVariable Long id, Model model,Authentication authentication) {
         DecorationTemplate template = templateService.getById(id);
         model.addAttribute("template", template);
+        model.addAttribute("user", (User) authentication.getPrincipal());
         return "/decoration-templates/view";
     }
 }

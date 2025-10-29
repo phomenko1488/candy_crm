@@ -26,16 +26,20 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/css/**", "/js/**", "/login").permitAll()
                         // Склад товаров - доступен всем авторизованным
-                        .requestMatchers("/warehouse/**").authenticated()
-                        // Склад украшений - доступен конструкторам и выше
-                        .requestMatchers("/jewelry/*","/jewelry/**").authenticated()
-                        .requestMatchers("/jewelry-items/*","/jewelry-items/**").authenticated()
+                        .requestMatchers("/products/**").authenticated()
+                        // Склад украшений - доступен всем авторизованным
+                        .requestMatchers("/decorations/**").authenticated()
+                        .requestMatchers("/decorations-templates/**").authenticated()
                         // Заказы - доступны всем авторизованным
-                        .requestMatchers("/orders/*","/orders/**").authenticated()
+                        .requestMatchers("/orders/**").authenticated()
                         // Пользователи - доступны менеджерам и выше
-                        .requestMatchers("/users/*","/users/**").authenticated()
-                        // Финансы - доступны директору и выше
-                        .requestMatchers("/finance/*","/finance/**").authenticated()
+                        .requestMatchers("/users/**").hasAnyRole("ADMIN", "DIRECTOR", "MANAGER")
+                        // Доходы - доступны директору и выше
+                        .requestMatchers("/finance/income/**").hasAnyRole("ADMIN", "DIRECTOR")
+                        // Расходы и зарплаты - только админу
+                        .requestMatchers("/finance/expense/**").hasRole("ADMIN")
+                        // Старые пути для совместимости
+                        .requestMatchers("/finance-operations/**").hasAnyRole("ADMIN", "DIRECTOR")
                         .anyRequest().authenticated()
                 )
                 .userDetailsService(userServiceImpl)
@@ -57,7 +61,6 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userServiceImpl);
-        provider.setUserDetailsService(userServiceImpl); // 👈 И здесь
         provider.setPasswordEncoder(passwordEncoder);
         return new ProviderManager(provider);
     }
