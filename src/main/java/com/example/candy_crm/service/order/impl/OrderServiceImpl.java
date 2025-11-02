@@ -141,6 +141,8 @@ public class OrderServiceImpl implements OrderService {
                 financeOperationService.createByOrderComplete(order);
             } else
                 return new CreateResponse<>(errors);
+        } else {
+            order = repository.save(order);
         }
         return new CreateResponse<>(order);
     }

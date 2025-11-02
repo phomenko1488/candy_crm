@@ -225,10 +225,6 @@
                     endDateInput.min = startValue;
                 }
             });
-
-            const now = new Date().toISOString().slice(0, 16);
-            startDateInput.min = now;
-            endDateInput.min = now;
         }
     });
 </script>

@@ -22,7 +22,7 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Enumerated(value = EnumType.STRING)
     private OrderStatus orderStatus;
     private String contactInfo;
     private BigDecimal price;

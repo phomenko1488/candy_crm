@@ -78,6 +78,16 @@ public class ProductServiceImpl implements ProductService {
             errors.add("unit");
         else
             product.setUnit(unit);
+        String color = dto.getColor();
+        if (color == null)
+            errors.add("color");
+        else
+            product.setColor(color);
+        String cover = dto.getCover();
+        if (cover == null)
+            errors.add("cover");
+        else
+            product.setCover(cover);
 
         if (!errors.isEmpty())
             return new ProductCreateResponse(errors);
