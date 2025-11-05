@@ -110,6 +110,36 @@
         </div>
     </div>
 
+    <!-- Remove Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-hammer me-2"></i>Списать
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="/decorations/${decoration.id}/craft">
+                        <input type="hidden" name="decorationId" value="${decoration.id}">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="comment" class="form-label">Комментарий</label>
+                                <input type="text" name="comment" id="comment" class="form-control">
+                            </div>
+                            <div class="col-md-6 d-flex align-items-end">
+                                <input type="hidden" name="type" value="OUTCOME">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="bi bi-hammer me-1"></i>Списать
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Operations History -->
     <div class="row mb-4">
         <div class="col-12">
@@ -128,6 +158,9 @@
                                     <th><i class="bi bi-tag me-1"></i>Тип</th>
                                     <th><i class="bi bi-hash me-1"></i>Количество</th>
                                     <th><i class="bi bi-chat-text me-1"></i>Комментарий</th>
+                                    <th><i class="bi bi-chat-text me-1"></i>Заказ</th>
+                                    <th><i class="bi bi-chat-text me-1"></i>Шаблон</th>
+                                    <th><i class="bi bi-chat-text me-1"></i>Конструктор</th>
                                     <th><i class="bi bi-calendar me-1"></i>Дата</th>
                                 </tr>
                                 </thead>
@@ -144,6 +177,28 @@
                                         <td>
                                             <#if op.comment?has_content>
                                                 <span class="text-muted">${op.comment}</span>
+                                            <#else>
+                                                <span class="text-muted">—</span>
+                                            </#if>
+                                        </td>
+                                        <td>
+                                            <#if op.order??>
+                                                <a href="/orders/${op.order.getId()}">${op.order.id}</a>
+                                            <#else>
+                                                <span class="text-muted">—</span>
+                                            </#if>
+                                        </td>
+                                        <td>
+                                            <#if op.decorationTemplate??>
+                                                <a href="/decoration-templates/${op.decorationTemplate.getId()}">${op.decorationTemplate.name}</a>
+                                            <#else>
+                                                <span class="text-muted">—</span>
+                                            </#if>
+                                        </td>
+                                        <td>
+
+                                            <#if op.type == 'INCOME'>
+                                                <a href="/users/${op.createdBy.getId()}">${op.createdBy.getUsername()}</a>
                                             <#else>
                                                 <span class="text-muted">—</span>
                                             </#if>
@@ -473,7 +528,7 @@
 
     // Инициализация: При загрузке обновляем кнопки (для первого элемента)
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             bindEvents();
             updateButtons();  // На случай, если HTML первого элемента имеет лишние кнопки
         });

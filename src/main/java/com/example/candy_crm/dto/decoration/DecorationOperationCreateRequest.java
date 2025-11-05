@@ -15,6 +15,4 @@ public class DecorationOperationCreateRequest {
     private Long decorationTemplateId;
     private OperationType type;
     private String comment;
-    private Long amount;
-    private BigDecimal price;
 }

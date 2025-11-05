@@ -81,9 +81,6 @@ public class DecorationServiceImpl implements DecorationService {
 
         Decoration decoration = optionalDecoration.get();
 
-        DecorationTemplate decorationTemplate = decorationTemplateService.getById(id);
-        if (decorationTemplate == null)
-            return new DecorationOperationCreateResponse(List.of("Шаблон не найден"));
 
 //        if (request.getAmount() == null || request.getAmount() <= 0)
 //            return new DecorationOperationCreateResponse(List.of("Количество должно быть положительным"));
@@ -95,6 +92,9 @@ public class DecorationServiceImpl implements DecorationService {
         operation.setCreatedBy(user);
         if (request.getType() == OperationType.INCOME) {
             //CRAFT
+            DecorationTemplate decorationTemplate = decorationTemplateService.getById(request.getDecorationTemplateId());
+            if (decorationTemplate == null)
+                return new DecorationOperationCreateResponse(List.of("Шаблон не найден"));
             decoration.setQuantity(decoration.getQuantity() + 1);
             operation.setComment("Crafted");
             operation.setDecorationTemplate(decorationTemplate);
@@ -118,10 +118,10 @@ public class DecorationServiceImpl implements DecorationService {
             }
         } else if (request.getType() == OperationType.OUTCOME) {
             //SUCCESS ORDER
-            if (decoration.getQuantity() < request.getAmount())
+            if (decoration.getQuantity() < 1)
                 return new DecorationOperationCreateResponse(List.of("Недостаточно украшений на складе"));
-            decoration.setQuantity(decoration.getQuantity() - request.getAmount());
-            operation.setComment("Added to order");
+            decoration.setQuantity(decoration.getQuantity() - 1);
+            operation.setComment(request.getComment());
         }
         operationRepository.save(operation);
         decorationRepository.save(decoration);

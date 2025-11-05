@@ -37,6 +37,9 @@ public class Order {
     @ManyToOne(fetch = FetchType.LAZY)
     private User editedBy;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Client client;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

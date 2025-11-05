@@ -112,6 +112,6 @@ public class DecorationController {
         } else {
             redirectAttributes.addFlashAttribute("successMessage", "Операция успешно добавлена");
         }
-        return "redirect:/decorations";
+        return String.format("redirect:/decorations/%s", id);
     }
 }
