@@ -1,87 +1,122 @@
 <#macro page title="">
-<!doctype html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Candy CRM - ${title!"Главная"}</title>
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/css/mine.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-</head>
-<body>
+    <!doctype html>
+    <html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Candy CRM - ${title!"Главная"}</title>
+        <link href="/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/css/mine.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+              rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    </head>
+    <body>
     <!-- Header -->
     <header>
         <nav class="navbar navbar-expand-lg">
             <div class="container">
                 <a class="navbar-brand" href="/">
-                    <i class="bi bi-gem me-2"></i><span class="d-none d-sm-inline">Candy CRM</span><span class="d-sm-none">CRM</span>
+                    <i class="bi bi-gem me-2"></i><span class="d-none d-sm-inline">Candy CRM</span><span
+                            class="d-sm-none">CRM</span>
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto">
                         <!-- Склад -->
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                               aria-expanded="false">
                                 <i class="bi bi-box-seam me-1"></i><span class="d-none d-md-inline">Склад</span>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="/products"><i class="bi bi-box me-2"></i>Товары</a></li>
-                                <li><a class="dropdown-item" href="/decorations"><i class="bi bi-gem me-2"></i>Украшения</a></li>
+                                <li><a class="dropdown-item" href="/products"><i class="bi bi-box me-2"></i>Товары</a>
+                                </li>
+                                <li><a class="dropdown-item" href="/decorations"><i class="bi bi-gem me-2"></i>Украшения</a>
+                                </li>
                             </ul>
                         </li>
-                        
+
                         <!-- Заказы -->
-                        <li class="nav-item">
-                            <a class="nav-link" href="/orders">
-                                <i class="bi bi-cart-check me-1"></i><span class="d-none d-md-inline">Заказы</span>
-                            </a>
-                        </li>
-                        
+                        <#if user?? && (user.hasRole("ADMIN") || user.hasRole("DIRECTOR") || user.hasRole("MANAGER"))>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                   aria-expanded="false">
+                                    <i class="bi bi-cart-check me-1"></i><span class="d-none d-md-inline">Заказы</span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/orders">
+                                            <i class="bi bi-cart-check me-2"></i>Заказы</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="/clients">
+                                            <i class="bi bi-people me-2"></i>Клиенты</a>
+                                    </li>
+                                </ul>
+                            </li>
+<#--                            <li class="nav-item">-->
+<#--                                <a class="nav-link" href="/orders">-->
+<#--                                    <i class="bi bi-cart-check me-1"></i><span class="d-none d-md-inline">Заказы</span>-->
+<#--                                </a>-->
+<#--                            </li>-->
+                        </#if>
+
                         <!-- Пользователи -->
                         <#if user?? && (user.hasRole("ADMIN") || user.hasRole("DIRECTOR") || user.hasRole("MANAGER"))>
                             <li class="nav-item">
                                 <a class="nav-link" href="/users">
-                                    <i class="bi bi-people me-1"></i><span class="d-none d-md-inline">Пользователи</span>
+                                    <i class="bi bi-people me-1"></i><span
+                                            class="d-none d-md-inline">Пользователи</span>
                                 </a>
                             </li>
                         </#if>
-                        
+
                         <!-- Финансы -->
                         <#if user?? && (user.hasRole("ADMIN") || user.hasRole("DIRECTOR"))>
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                   aria-expanded="false">
                                     <i class="bi bi-cash-stack me-1"></i><span class="d-none d-md-inline">Финансы</span>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="/finance/income"><i class="bi bi-arrow-down-circle me-2"></i>Доходы</a></li>
+                                    <li><a class="dropdown-item" href="/finance/income"><i
+                                                    class="bi bi-arrow-down-circle me-2"></i>Доходы</a></li>
                                     <#if user.hasRole("ADMIN")>
-                                        <li><a class="dropdown-item" href="/finance/expense"><i class="bi bi-arrow-up-circle me-2"></i>Расходы и зарплаты</a></li>
+                                        <li><a class="dropdown-item" href="/finance/expense"><i
+                                                        class="bi bi-arrow-up-circle me-2"></i>Расходы и зарплаты</a>
+                                        </li>
                                     </#if>
                                 </ul>
                             </li>
                         </#if>
                     </ul>
-                    
+
                     <ul class="navbar-nav">
                         <#if user??>
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="bi bi-person-circle me-1"></i><span class="d-none d-sm-inline">${user.username}</span>
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                   aria-expanded="false">
+                                    <i class="bi bi-person-circle me-1"></i><span
+                                            class="d-none d-sm-inline">${user.username}</span>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
-                                    <li><a class="dropdown-item" href="/profile"><i class="bi bi-person me-2"></i>Профиль</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>Выход</a></li>
+                                    <li><a class="dropdown-item" href="/profile"><i class="bi bi-person me-2"></i>Профиль</a>
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item" href="/logout"><i
+                                                    class="bi bi-box-arrow-right me-2"></i>Выход</a></li>
                                 </ul>
                             </li>
                         <#else>
                             <li class="nav-item">
                                 <a class="nav-link" href="/login">
-                                    <i class="bi bi-box-arrow-in-right me-1"></i><span class="d-none d-sm-inline">Вход</span>
+                                    <i class="bi bi-box-arrow-in-right me-1"></i><span
+                                            class="d-none d-sm-inline">Вход</span>
                                 </a>
                             </li>
                         </#if>
@@ -125,6 +160,6 @@
     </footer>
 
     <script src="/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    </body>
+    </html>
 </#macro>

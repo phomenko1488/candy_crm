@@ -37,7 +37,8 @@ public class DecorationController {
     }
 
     @GetMapping
-    public String listDecorations(Model model, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size,
+    public String listDecorations(Model model, @RequestParam(defaultValue = "0") int page,
+                                  @RequestParam(defaultValue = "20") int size,
                                   Authentication authentication) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Decoration> decorationPage = decorationService.getAllDecorations(pageable);

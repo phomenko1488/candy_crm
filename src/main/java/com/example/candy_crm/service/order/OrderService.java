@@ -2,6 +2,7 @@ package com.example.candy_crm.service.order;
 
 
 import com.example.candy_crm.dto.CreateResponse;
+import com.example.candy_crm.dto.order.ClientCreateRequest;
 import com.example.candy_crm.dto.order.OrderCreateRequest;
 import com.example.candy_crm.dto.order.OrderEditRequest;
 import com.example.candy_crm.model.order.Order;
@@ -12,9 +13,11 @@ import org.springframework.data.domain.Pageable;
 public interface OrderService {
     Page<Order> getAllOrders(Pageable pageable);
 
+    Page<Order> getOrdersByStatus(String status, Pageable pageable);
+
     Order getOrderById(Long id);
 
-    CreateResponse<Order> create(OrderCreateRequest request, User user);
+    CreateResponse<Order> create(OrderCreateRequest request, ClientCreateRequest clientCreateRequest, User user);
 
     CreateResponse<Order> edit(OrderEditRequest request, User user);
 }

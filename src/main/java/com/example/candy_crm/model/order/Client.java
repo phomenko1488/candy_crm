@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -24,4 +25,18 @@ public class Client {
     private String address;
     @OneToMany(mappedBy = "client")
     private List<Order> orders;
+
+    private LocalDate createdAt;
+    private LocalDate updatedAt;
+
+    @PrePersist
+    public void onCreate() {
+        createdAt = LocalDate.now();
+        updatedAt = LocalDate.now();
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        updatedAt = LocalDate.now();
+    }
 }

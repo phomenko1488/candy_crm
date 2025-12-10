@@ -71,7 +71,13 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Единица измерения</label>
-                                <input type="text" name="unit" class="form-control" placeholder="шт, кг и т.д." required>
+                                <select name="unit" class="form-select">
+                                    <option value="шт.">шт.</option>
+                                    <option value="кг.">кг.</option>
+                                    <option value="г.">г.</option>
+                                    <option value="пачки">пачки</option>
+<#--                                    <option value="пачки">пачки</option>-->
+                                </select>
                             </div>
                             <div class="col-md-6 d-flex align-items-end">
                                 <button type="submit" class="btn btn-primary">
@@ -281,11 +287,35 @@
     </div>
 
     <!-- Pagination -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <@p.pagination currentPage=page.getNumber() totalPages=page.getTotalPages() baseUrl="/products" />
+    <#if page.totalPages gt 0>
+        <div class="row mt-4">
+            <div class="col-12">
+                <nav aria-label="Пагинация">
+                    <ul class="pagination justify-content-center">
+                        <#if page.hasPrevious()>
+                            <li class="page-item">
+                                <a class="page-link" href="?page=${page.number - 1}&size=${page.size}">
+                                    <i class="bi bi-chevron-left"></i> Предыдущая
+                                </a>
+                            </li>
+                        </#if>
+                        <#list 0..page.totalPages - 1 as i>
+                            <li class="page-item <#if page.number == i>active</#if>">
+                                <a class="page-link" href="?page=${i}&size=${page.size}">${i + 1}</a>
+                            </li>
+                        </#list>
+                        <#if page.hasNext()>
+                            <li class="page-item">
+                                <a class="page-link" href="?page=${page.number + 1}&size=${page.size}">
+                                    Следующая <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        </#if>
+                    </ul>
+                </nav>
+            </div>
         </div>
-    </div>
+    </#if>
 </@base.page>
 
 <script>

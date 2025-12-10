@@ -1,6 +1,7 @@
 package com.example.candy_crm.controller;
 
 import com.example.candy_crm.dto.CreateResponse;
+import com.example.candy_crm.dto.order.ClientCreateRequest;
 import com.example.candy_crm.dto.order.OrderCreateRequest;
 import com.example.candy_crm.dto.order.OrderEditRequest;
 import com.example.candy_crm.model.order.Order;
@@ -30,26 +31,36 @@ public class OrderController {
     public String getOrders(Model model,
                             @RequestParam(defaultValue = "0") int page,
                             @RequestParam(defaultValue = "20") int size,
+                            @RequestParam(required = false) String status,  // Новый param для фильтра
                             Authentication authentication) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Order> orders = orderService.getAllOrders(pageable);
+        Page<Order> orders;
+        if (status != null && !status.equals("ALL")) {
+            orders = orderService.getOrdersByStatus(status, pageable);
+        } else {
+            orders = orderService.getAllOrders(pageable);
+        }
         model.addAttribute("products", productRepository.findAll());
         model.addAttribute("decorations", decorationRepository.findAll());
         model.addAttribute("orders", orders);
+        model.addAttribute("currentStatus", status != null ? status : "ALL");  // Для select в FTL
         model.addAttribute("user", (User) authentication.getPrincipal());
         model.addAttribute("newOrderCreateRequest", new OrderCreateRequest());
+        model.addAttribute("newClientCreateRequest", new ClientCreateRequest());
         return "/orders/list";
     }
 
     @PostMapping
     public String create(@ModelAttribute OrderCreateRequest request,
+                         @ModelAttribute ClientCreateRequest clientReq,
+                         @RequestParam(required = false) String status,  // Сохраняем фильтр
                          Authentication auth,
                          RedirectAttributes redirectAttributes) {
         User user = (User) auth.getPrincipal();
-        CreateResponse<Order> responseDTO = orderService.create(request, user);
+        CreateResponse<Order> responseDTO = orderService.create(request, clientReq, user);
         if (!responseDTO.isSuccess()) {
             redirectAttributes.addFlashAttribute("errorMessage", String.join(",", responseDTO.getErrors()));
-            return "redirect:/orders";
+            return "redirect:/orders?page=0&size=20" + (status != null ? "&status=" + status : "");
         }
         redirectAttributes.addFlashAttribute("successMessage", "Заказ успешно создан");
         return String.format("redirect:/orders/%s", responseDTO.getResponse().getId());
@@ -67,7 +78,10 @@ public class OrderController {
     }
 
     @PostMapping("/edit")
-    public String edit(@ModelAttribute OrderEditRequest request, RedirectAttributes redirectAttributes, Authentication auth) {
+    public String edit(@ModelAttribute OrderEditRequest request,
+                       @RequestParam(required = false) String status,  // Сохраняем фильтр
+                       RedirectAttributes redirectAttributes,
+                       Authentication auth) {
         User user = (User) auth.getPrincipal();
         CreateResponse<Order> responseDTO = orderService.edit(request, user);
         if (!responseDTO.isSuccess()) {

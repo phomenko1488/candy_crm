@@ -18,7 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -109,7 +109,7 @@ public class DecorationServiceImpl implements DecorationService {
                     productOperation.setProduct(product);
                     productOperation.setType(OperationType.OUTCOME);
                     productOperation.setComment(String.format("Craft %s by %s template", decoration.getName(), decorationTemplate.getName()));
-                    productOperation.setLocalDateTime(LocalDateTime.now());
+                    productOperation.setLocalDate(LocalDate.now());
                     productOperation.setAmount(itemQty.longValue());
                     productOperation.setCreatedBy(user);
                     product.getOperations().add(productOperation);

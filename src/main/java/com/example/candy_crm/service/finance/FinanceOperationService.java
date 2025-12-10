@@ -5,11 +5,13 @@ import com.example.candy_crm.dto.CreateResponse;
 import com.example.candy_crm.dto.finance.SalaryCreateRequest;
 import com.example.candy_crm.model.finance.FinanceOperation;
 import com.example.candy_crm.model.finance.FinanceOperationType;
+import com.example.candy_crm.model.finance.Position;
 import com.example.candy_crm.model.operation.Operation;
 import com.example.candy_crm.model.order.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 public interface FinanceOperationService {
@@ -27,4 +29,8 @@ public interface FinanceOperationService {
 
     //salary
     CreateResponse<FinanceOperation> createBySalary(SalaryCreateRequest salaryCreateRequest);
+
+    byte[] exportToExcel(FinanceOperationType outcome, LocalDate startDate, LocalDate endDate);
+
+    Page<FinanceOperation> getFilteredPage(FinanceOperationType outcome, LocalDate startDate, LocalDate endDate, Position position, Pageable pageable);
 }

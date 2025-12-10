@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -114,7 +115,7 @@ public class ProductServiceImpl implements ProductService {
         operation.setType(type);
         operation.setProduct(product);
         operation.setAmount(request.getAmount());
-        operation.setLocalDateTime(LocalDateTime.now());
+        operation.setLocalDate(LocalDate.now());
         operation.setType(type);
         operation.setComment(request.getComment());
         operation.setProduct(product);

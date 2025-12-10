@@ -5,6 +5,7 @@ import com.example.candy_crm.dto.order.*;
 import com.example.candy_crm.model.decoration.Decoration;
 import com.example.candy_crm.model.operation.Operation;
 import com.example.candy_crm.model.operation.OperationType;
+import com.example.candy_crm.model.order.Client;
 import com.example.candy_crm.model.order.Order;
 import com.example.candy_crm.model.order.OrderItem;
 import com.example.candy_crm.model.order.OrderStatus;
@@ -14,6 +15,7 @@ import com.example.candy_crm.repository.decoration.DecorationRepository;
 import com.example.candy_crm.repository.order.OrderRepository;
 import com.example.candy_crm.repository.product.ProductRepository;
 import com.example.candy_crm.service.finance.FinanceOperationService;
+import com.example.candy_crm.service.order.ClientService;
 import com.example.candy_crm.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,7 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,6 +35,7 @@ public class OrderServiceImpl implements OrderService {
     private final ProductRepository productRepository;
     private final DecorationRepository decorationRepository;
     private final FinanceOperationService financeOperationService;
+    private final ClientService clientService;
 
     @Override
     public Page<Order> getAllOrders(Pageable pageable) {
@@ -40,24 +43,43 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Page<Order> getOrdersByStatus(String status, Pageable pageable) {
+        if (status == null || status.equalsIgnoreCase("ALL")) {
+            return getAllOrders(pageable);
+        }
+        try {
+            OrderStatus orderStatus = OrderStatus.valueOf(status.toUpperCase());
+            return repository.findByOrderStatus(orderStatus, pageable);  // Assume repo has this method
+        } catch (IllegalArgumentException e) {
+            return getAllOrders(pageable);  // Fallback if invalid status
+        }
+    }
+    @Override
     public Order getOrderById(Long id) {
         return repository.getOrderById(id);
     }
 
     @Override
-    public CreateResponse<Order> create(OrderCreateRequest request, User user) {
+    public CreateResponse<Order> create(OrderCreateRequest request, ClientCreateRequest clientCreateRequest, User user) {
+        List<String> errors = new ArrayList<>();
+        // Создаём Client автоматически
+        CreateResponse<Client> clientResponse = clientService.create(clientCreateRequest);
+        if (!clientResponse.isSuccess()) {
+            return new CreateResponse<>(clientResponse.getErrors());  // Ошибки в client
+        }
+        Client client = clientResponse.getResponse();
         Order order = new Order();
         BigDecimal price = BigDecimal.ZERO;
         order.setContactInfo(request.getContactInfo());
-        order.setDate(LocalDateTime.now());
+        order.setDate(LocalDate.now());
         order.setOrderStatus(OrderStatus.CREATED);
         order.setCreatedBy(user);
-        List<String> errors = new ArrayList<>();
+        order.setClient(client);  // Сохраняем Client
 
         for (OrderItemDTO item : request.getItems()) {
             Long quantity = item.getQuantity();
             if (quantity <= 0) {
-                errors.add(String.format("wrong qty"));
+                errors.add("wrong qty");
                 continue;
             }
             OrderItem orderItem = new OrderItem();
@@ -109,7 +131,7 @@ public class OrderServiceImpl implements OrderService {
                         operation.setType(OperationType.OUTCOME);
                         operation.setComment("Order " + order.getId());
                         operation.setCreatedBy(user);
-                        operation.setLocalDateTime(LocalDateTime.now());
+                        operation.setLocalDate(LocalDate.now());
                         operation.setProduct(product);
                         operation.setOrder(order);
                         product.getOperations().add(operation);
@@ -126,7 +148,7 @@ public class OrderServiceImpl implements OrderService {
                         operation.setComment("Order " + order.getId());
                         operation.setType(OperationType.OUTCOME);
                         operation.setCreatedBy(user);
-                        operation.setLocalDateTime(LocalDateTime.now());
+                        operation.setLocalDate(LocalDate.now());
                         operation.setDecoration(decoration);
                         operation.setOrder(order);
                         decoration.getOperations().add(operation);
