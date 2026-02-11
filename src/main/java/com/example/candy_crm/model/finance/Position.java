@@ -12,13 +12,27 @@ public enum Position {
     public String toOutput() {
         String res = "";
         switch (this) {
-            case CEO -> res = "CEO";
-            case CONSTRUCTOR1 -> res = "Конструктор 1";
-            case CONSTRUCTOR2 -> res = "Конструктор 2";
-            case SMM -> res = "SMM";
-            case IT -> res = "Разработчик";
-            case PR_COMMAND -> res = "PR команда";
-            case DESIGNER -> res = "Дизайнер";
+            case CEO:
+                res = "CEO";
+                break;
+            case CONSTRUCTOR1:
+                res = "Конструктор 1";
+                break;
+            case CONSTRUCTOR2:
+                res = "Конструктор 2";
+                break;
+            case SMM:
+                res = "SMM";
+                break;
+            case IT:
+                res = "Разработчик";
+                break;
+            case PR_COMMAND:
+                res = "PR команда";
+                break;
+            case DESIGNER:
+                res = "Дизайнер";
+                break;
         }
         return res;
     }

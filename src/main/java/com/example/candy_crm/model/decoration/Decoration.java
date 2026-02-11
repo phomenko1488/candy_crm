@@ -30,6 +30,7 @@ public class Decoration implements Tradable {
 
     private BigDecimal price;
     private Long quantity = 0L;
+    private String photo;
 
     @OneToMany(mappedBy = "decoration", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DecorationTemplate> templates = new ArrayList<>();

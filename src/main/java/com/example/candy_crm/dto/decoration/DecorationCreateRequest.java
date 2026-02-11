@@ -3,6 +3,7 @@ package com.example.candy_crm.dto.decoration;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 
@@ -15,4 +16,5 @@ public class DecorationCreateRequest {
     private String color;
     private String base;
     private BigDecimal price;
+    private MultipartFile photo;
 }

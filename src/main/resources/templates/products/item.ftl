@@ -1,23 +1,66 @@
 <#import "../layout/base.ftl" as base>
 
 <@base.page title="Товар: ${product.name}">
-    <!-- Page Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1 class="mb-1">
-                        <i class="bi bi-box text-primary me-2"></i>Товар: ${product.name}
-                    </h1>
-                    <p class="text-muted mb-0">Детальная информация о товаре</p>
+    <!-- Page Header с большой фотографией -->
+        <!-- Большая фотография — надёжный вариант -->
+        <div class="mb-4 rounded-3 overflow-hidden shadow-lg" style="height: 450px; position: relative;">
+            <#if product.photo??> <#-- или decoration.photo?? в зависимости от страницы -->
+                <img src="${product.photo}"
+                     alt="${product.name}"
+                     class="position-absolute top-0 start-0 w-100 h-100"
+                     style="object-fit: cover; object-position: center;">
+            <#else>
+                <div class="d-flex align-items-center justify-content-center w-100 h-100 bg-light">
+                    <i class="bi bi-box display-1 text-muted opacity-50"></i> <#-- или bi-gem для украшений -->
                 </div>
-                <a href="/products" class="btn btn-secondary">
-                    <i class="bi bi-arrow-left me-1"></i>Назад к списку
+            </#if>
+
+            <!-- Тёмная подложка для текста -->
+            <div class="position-absolute bottom-0 start-0 w-100 p-4 text-white"
+                 style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);">
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <h1 class="mb-0 display-5 fw-bold">
+                        <i class="bi bi-box me-3"></i>${product.name}
+                    </h1>
+
+                    <button class="btn btn-outline-light btn-sm rounded-pill"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#renameDecorationCollapse"
+                            aria-expanded="false">
+                        <i class="bi bi-pencil me-1"></i>Редактировать
+                    </button>
+                </div>
+
+                <div class="collapse mt-3" id="renameDecorationCollapse">
+                    <form method="post" action="/products/${product.id}/rename" class="row g-2 align-items-center">
+                        <div class="col-12 col-md-6">
+                            <input type="text"
+                                   class="form-control form-control-lg"
+                                   name="name"
+                                   value="${product.name}"
+                                   required>
+                        </div>
+                        <div class="col-12 col-md-auto">
+                            <button type="submit" class="btn btn-warning btn-lg">
+                                <i class="bi bi-check2 me-1"></i>Сохранить
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="d-flex align-items-center gap-4 opacity-90">
+                    <span class="fs-4">${product.price} $</span>
+                    <span class="badge bg-info fs-5 px-3 py-2">${product.quantity} ${product.unit}</span>
+                </div>
+            </div>
+
+            <!-- Кнопка назад -->
+            <div class="position-absolute top-0 end-0 p-4">
+                <a href="/products" class="btn btn-light btn-lg rounded-pill shadow">
+                    <i class="bi bi-arrow-left me-2"></i>Назад
                 </a>
             </div>
         </div>
-    </div>
-
     <!-- Product Details -->
     <div class="row mb-4">
         <div class="col-12">
@@ -50,7 +93,7 @@
                                 <i class="bi bi-currency-dollar text-success me-2"></i>
                                 <div>
                                     <strong>Цена:</strong>
-                                    <span class="fw-medium ms-2">${product.price} ₽</span>
+                                    <span class="fw-medium ms-2">${product.price} $</span>
                                 </div>
                             </div>
                         </div>

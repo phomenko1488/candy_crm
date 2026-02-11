@@ -72,7 +72,7 @@
                                 <i class="bi bi-currency-dollar text-success me-2"></i>
                                 <div>
                                     <strong>Цена:</strong>
-                                    <span class="fw-medium ms-2">${(order.price)} ₽</span>
+                                    <span class="fw-medium ms-2">${(order.price)} $</span>
                                 </div>
                             </div>
                             <div class="d-flex align-items-center mb-3">
@@ -142,13 +142,13 @@
                                                     <i class="bi bi-box text-primary me-2"></i>
                                                     <div>
                                                         <div class="fw-medium">${item.product.name}</div>
-                                                        <small class="text-muted">${item.product.price} ₽</small>
+                                                        <small class="text-muted">${item.product.price} $</small>
                                                     </div>
                                                 <#elseif item.decoration??>
                                                     <i class="bi bi-gem text-success me-2"></i>
                                                     <div>
                                                         <div class="fw-medium">${item.decoration.name}</div>
-                                                        <small class="text-muted">${item.decoration.price} ₽</small>
+                                                        <small class="text-muted">${item.decoration.price} $</small>
                                                     </div>
                                                 <#else>
                                                     <i class="bi bi-question-circle text-muted me-2"></i>

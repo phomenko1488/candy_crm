@@ -38,7 +38,7 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <form action="/products" method="post">
+                    <form action="/products" method="post" enctype="multipart/form-data">
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label">Название</label>
@@ -47,6 +47,10 @@
                             <div class="col-md-6">
                                 <label class="form-label">Цвет</label>
                                 <input type="text" name="color" class="form-control" placeholder="Введите цвет" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Фото товара</label>
+                                <input type="file" name="photo" class="form-control" accept="image/*" type="file">
                             </div>
                             <div class="col-12">
                                 <label class="form-label">Описание</label>
@@ -166,6 +170,17 @@
             </div>
         </div>
     </div>
+    <div class="row mb-4">
+        <div class="col-12 col-md-6 offset-md-6">
+            <form method="get" class="d-flex">
+                <input type="text" name="search" class="form-control me-2" placeholder="Поиск по названию..."
+                       value="${(search!'')?html}">
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="bi bi-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
 
     <!-- Products Table -->
     <div class="row">
@@ -195,7 +210,11 @@
                                         <tr <#if product.quantity < product.minQuantity>class="table-warning"</#if>>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <i class="bi bi-box text-primary me-2"></i>
+                                                    <#if product.photo??>
+                                                        <img src="${product.photo}" alt="${product.name}" style="width:50px; height:50px; object-fit:cover; border-radius:6px;" class="me-2">
+                                                    <#else>
+                                                        <i class="bi bi-box text-primary me-2" style="font-size:1.5rem;"></i>
+                                                    </#if>
                                                     <div>
                                                         <div class="fw-medium">${product.name}</div>
                                                         <#if product.description?has_content>
@@ -213,7 +232,7 @@
                                                 </#if>
                                             </td>
                                             <td><span class="text-muted">${product.unit}</span></td>
-                                            <td><span class="fw-medium">${product.price} ₽</span></td>
+                                            <td><span class="fw-medium">${product.price} $</span></td>
                                             <td>
                                                 <a href="/products/${product.id}" class="btn btn-sm btn-outline-primary">
                                                     <i class="bi bi-eye me-1"></i>Открыть
@@ -260,7 +279,7 @@
                                             </div>
                                             <div class="col-6">
                                                 <small class="text-muted">Цена:</small>
-                                                <div class="fw-medium">${product.price} ₽</div>
+                                                <div class="fw-medium">${product.price} $</div>
                                             </div>
                                         </div>
                                         <#if product.quantity < product.minQuantity>

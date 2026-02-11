@@ -11,13 +11,16 @@ import com.example.candy_crm.model.user.User;
 import com.example.candy_crm.repository.decoration.DecorationRepository;
 import com.example.candy_crm.repository.operation.OperationRepository;
 import com.example.candy_crm.repository.product.ProductRepository;
+import com.example.candy_crm.service.FileUploadService;
 import com.example.candy_crm.service.decoration.DecorationService;
 import com.example.candy_crm.service.decoration.DecorationTemplateService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +35,15 @@ public class DecorationServiceImpl implements DecorationService {
     private final DecorationTemplateService decorationTemplateService;
     private final OperationRepository operationRepository;
 
+    @Autowired
+    private FileUploadService fileUploadService;
+
     @Override
-    public Page<Decoration> getAllDecorations(Pageable pageable) {
-        return decorationRepository.findAll(pageable);
+    public Page<Decoration> getAllDecorations(Pageable pageable,String search) {
+        if (search == null || search.isBlank()) {
+            return decorationRepository.findAll(pageable);
+        }
+        return decorationRepository.findByNameContainingIgnoreCase(search.trim(), pageable);
     }
 
     @Override
@@ -49,7 +58,7 @@ public class DecorationServiceImpl implements DecorationService {
     }
 
     @Override
-    public DecorationCreateResponse create(DecorationCreateRequest dto, User auth) {
+    public DecorationCreateResponse create(DecorationCreateRequest dto, User auth) throws IOException {
         List<String> errors = new ArrayList<>();
 
         if (dto.getName() == null || dto.getName().isBlank())
@@ -60,6 +69,7 @@ public class DecorationServiceImpl implements DecorationService {
         if (!errors.isEmpty())
             return new DecorationCreateResponse(errors);
 
+
         Decoration decoration = new Decoration();
         decoration.setName(dto.getName());
         decoration.setDescription(dto.getDescription());
@@ -68,6 +78,11 @@ public class DecorationServiceImpl implements DecorationService {
         decoration.setPrice(dto.getPrice());
         decoration.setQuantity(0L);
         decoration.setCreatedBy(auth);
+
+        if (dto.getPhoto() != null && !dto.getPhoto().isEmpty()) {
+            String photoPath = fileUploadService.saveFile(dto.getPhoto());
+            decoration.setPhoto(photoPath);
+        }
 
         decorationRepository.save(decoration);
         return new DecorationCreateResponse(decoration);
@@ -128,4 +143,23 @@ public class DecorationServiceImpl implements DecorationService {
 
         return new DecorationOperationCreateResponse(operation);
     }
+
+    @Override
+    public DecorationCreateResponse rename(com.example.candy_crm.dto.decoration.DecorationRenameRequest request, User user) {
+        List<String> errors = new ArrayList<>();
+
+        if (request.getId() == null) errors.add("ID не указан");
+        if (request.getName() == null || request.getName().isBlank()) errors.add("Название не может быть пустым");
+
+        if (!errors.isEmpty()) return new DecorationCreateResponse(errors);
+
+        Decoration decoration = decorationRepository.findById(request.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Украшение не найдено"));
+
+        decoration.setName(request.getName().trim());
+        decorationRepository.save(decoration);
+
+        return new DecorationCreateResponse(decoration);
+    }
+
 }

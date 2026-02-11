@@ -28,12 +28,16 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <form method="post" action="/decorations">
+                    <form method="post" action="/decorations" enctype="multipart/form-data">
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label">Название</label>
                                 <input type="text" name="name" class="form-control"
                                        placeholder="Введите название украшения" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Фото украшения</label>
+                                <input type="file" name="photo" class="form-control" accept="image/*" type="file">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Цвет</label>
@@ -85,7 +89,17 @@
             </div>
         </div>
     </div>
-
+<div class="row mb-4">
+    <div class="col-12 col-md-6">
+        <form method="get" class="d-flex">
+            <input type="text" name="search" class="form-control me-2" placeholder="Поиск по названию..."
+                   value="${(search!'')?html}">
+            <button type="submit" class="btn btn-outline-primary">
+                <i class="bi bi-search"></i>
+            </button>
+        </form>
+    </div>
+</div>
     <!-- Decorations Table -->
     <div class="row">
         <div class="col-12">
@@ -114,10 +128,12 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <i class="bi bi-gem text-success me-2"></i>
-                                            <div>
-                                                <div class="fw-medium">${decoration.name}</div>
-                                            </div>
+                                            <#if decoration.photo??>
+                                                <img src="${decoration.photo}" alt="${decoration.name}" style="width:50px; height:50px; object-fit:cover; border-radius:6px;" class="me-2">
+                                            <#else>
+                                                <i class="bi bi-gem text-success me-2" style="font-size:1.5rem;"></i>
+                                            </#if>
+                                            <div class="fw-medium">${decoration.name}</div>
                                         </div>
                                     </td>
                                     <td>
@@ -141,7 +157,7 @@
                                             <span class="text-muted">—</span>
                                         </#if>
                                     </td>
-                                    <td><span class="fw-medium">${decoration.price?string('0.00')} ₽</span></td>
+                                    <td><span class="fw-medium">${decoration.price?string('0.00')} $</span></td>
                                     <td>
                                         <span class="badge bg-info">${decoration.quantity!0}</span>
                                     </td>

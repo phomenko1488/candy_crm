@@ -1,22 +1,24 @@
 package com.example.candy_crm.service.product.impl;
 
-import com.example.candy_crm.dto.product.ProductCreateRequest;
-import com.example.candy_crm.dto.product.ProductOperationCreateRequest;
-import com.example.candy_crm.dto.product.ProductOperationCreateResponse;
+import com.example.candy_crm.dto.decoration.DecorationCreateResponse;
+import com.example.candy_crm.dto.product.*;
+import com.example.candy_crm.model.decoration.Decoration;
 import com.example.candy_crm.model.operation.Operation;
 import com.example.candy_crm.model.operation.OperationType;
 import com.example.candy_crm.model.product.Product;
 import com.example.candy_crm.model.user.User;
 import com.example.candy_crm.repository.product.ProductRepository;
+import com.example.candy_crm.service.FileUploadService;
 import com.example.candy_crm.service.finance.FinanceOperationService;
 import com.example.candy_crm.service.operation.OperationService;
-import com.example.candy_crm.dto.product.ProductCreateResponse;
 import com.example.candy_crm.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,10 +31,15 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository repository;
     private final OperationService operationService;
     private final FinanceOperationService financeOperationService;
+    @Autowired
+    private FileUploadService fileUploadService;
 
     @Override
-    public Page<Product> getAllProducts(Pageable pageable) {
-        return repository.findAll(pageable);
+    public Page<Product> getAllProducts(Pageable pageable, String search) {
+        if (search == null || search.isBlank()) {
+            return repository.findAll(pageable);
+        }
+        return repository.findByNameContainingIgnoreCase(search.trim(), pageable);
     }
 
     @Override
@@ -46,7 +53,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductCreateResponse create(ProductCreateRequest dto, User auth) {
+    public ProductCreateResponse create(ProductCreateRequest dto, User auth) throws IOException {
         Product product = new Product();
         List<String> errors = new ArrayList<>();
 
@@ -89,7 +96,10 @@ public class ProductServiceImpl implements ProductService {
             errors.add("cover");
         else
             product.setCover(cover);
-
+        if (dto.getPhoto() != null && !dto.getPhoto().isEmpty()) {
+            String photoPath = fileUploadService.saveFile(dto.getPhoto());
+            product.setPhoto(photoPath);
+        }
         if (!errors.isEmpty())
             return new ProductCreateResponse(errors);
         return new ProductCreateResponse(repository.save(product));
@@ -127,5 +137,23 @@ public class ProductServiceImpl implements ProductService {
             financeOperationService.createByProductBuy(operation);
         }
         return response;
+    }
+
+    @Override
+    public ProductCreateResponse rename(ProductRenameRequest request, User user) {
+        List<String> errors = new ArrayList<>();
+
+        if (request.getId() == null) errors.add("ID не указан");
+        if (request.getName() == null || request.getName().isBlank()) errors.add("Название не может быть пустым");
+
+        if (!errors.isEmpty()) return new ProductCreateResponse(errors);
+
+        Product decoration = repository.findById(request.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Украшение не найдено"));
+
+        decoration.setName(request.getName().trim());
+        repository.save(decoration);
+
+        return new ProductCreateResponse(decoration);
     }
 }

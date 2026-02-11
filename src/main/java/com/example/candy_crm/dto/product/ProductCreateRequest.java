@@ -3,6 +3,7 @@ package com.example.candy_crm.dto.product;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @AllArgsConstructor
@@ -15,4 +16,5 @@ public class ProductCreateRequest {
     private String unit;
     private String color;
     private String cover;
+    private MultipartFile photo;
 }

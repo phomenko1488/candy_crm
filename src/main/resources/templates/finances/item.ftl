@@ -52,7 +52,7 @@
                                     <i class="bi bi-currency-dollar text-success me-2"></i>
                                     <div>
                                         <strong>Сумма:</strong>
-                                        <span class="fw-medium ms-2">${operation.amount} ₽</span>
+                                        <span class="fw-medium ms-2">${operation.amount} $</span>
                                     </div>
                                 </div>
                             </div>
@@ -133,7 +133,7 @@
                                     <a href="/products/${operation.product.id}" class="btn btn-sm btn-outline-primary ms-2">
                                         <i class="bi bi-eye me-1"></i>${operation.product.name}
                                     </a>
-                                    <span class="text-muted ms-2">(цена: ${operation.product.price} ₽)</span>
+                                    <span class="text-muted ms-2">(цена: ${operation.product.price} $)</span>
                                 </div>
                             </div>
                         </div>
@@ -177,7 +177,7 @@
                                         <i class="bi bi-currency-dollar text-success me-2"></i>
                                         <div>
                                             <strong>Сумма:</strong>
-                                            <span class="fw-medium ms-2">${operation.salary.amount} ₽</span>
+                                            <span class="fw-medium ms-2">${operation.salary.amount} $</span>
                                         </div>
                                     </div>
                                 </div>

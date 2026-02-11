@@ -35,6 +35,7 @@ public class Product implements Tradable {
 
     private Integer minQuantity;     // минимальный остаток
     private String unit;         // шт, грамм, см и т.д.
+    private String photo;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Operation> operations = new ArrayList<>();

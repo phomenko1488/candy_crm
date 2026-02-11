@@ -22,6 +22,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
+
 @Controller
 @RequestMapping("/decorations")
 public class DecorationController {
@@ -39,14 +41,16 @@ public class DecorationController {
     @GetMapping
     public String listDecorations(Model model, @RequestParam(defaultValue = "0") int page,
                                   @RequestParam(defaultValue = "20") int size,
+                                  @RequestParam(required = false) String search,
                                   Authentication authentication) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Decoration> decorationPage = decorationService.getAllDecorations(pageable);
+        Page<Decoration> decorationPage = decorationService.getAllDecorations(pageable, search);
 
         model.addAttribute("decorations", decorationPage.getContent());
         model.addAttribute("page", decorationPage);
         model.addAttribute("user", (User) authentication.getPrincipal());
         model.addAttribute("newDecoration", new Decoration());
+        model.addAttribute("search", search); // для сохранения в поле поиска
         model.addAttribute("newDecorationOperation", new DecorationOperationCreateRequest());
         return "decorations/list";
     }
@@ -77,7 +81,7 @@ public class DecorationController {
     }
 
     @PostMapping
-    public String create(@ModelAttribute DecorationCreateRequest dto, Authentication auth, RedirectAttributes redirectAttributes) {
+    public String create(@ModelAttribute DecorationCreateRequest dto, Authentication auth, RedirectAttributes redirectAttributes) throws IOException {
         User user = (User) auth.getPrincipal();
         DecorationCreateResponse responseDTO = decorationService.create(dto, user);
         if (!responseDTO.isSuccess()) {
@@ -115,4 +119,27 @@ public class DecorationController {
         }
         return String.format("redirect:/decorations/%s", id);
     }
+
+    @PostMapping("/{id}/rename")
+    public String renameDecoration(@PathVariable Long id,
+                                   @ModelAttribute com.example.candy_crm.dto.decoration.DecorationRenameRequest request,
+                                   Authentication auth,
+                                   RedirectAttributes redirectAttributes) {
+
+        User user = (User) auth.getPrincipal();
+
+        // чтобы нельзя было подменить id из формы
+        request.setId(id);
+
+        var response = decorationService.rename(request, user);
+
+        if (!response.isSuccess()) {
+            redirectAttributes.addFlashAttribute("errorMessage", String.join(",", response.getErrors()));
+        } else {
+            redirectAttributes.addFlashAttribute("successMessage", "Название обновлено");
+        }
+
+        return "redirect:/decorations/" + id;
+    }
+
 }
